@@ -1,0 +1,26 @@
+{
+  "name": "serverest-api-testing",
+  "version": "1.0.0",
+  "description": "Testes automatizados de API REST (Usuários) do ServeRest com Postman e Newman.",
+  "main": "index.js",
+  "scripts": {
+    "serverest": "serverest",
+    "newman": "newman run \"collections/Exercicio EBAC teste de API.postman_collection.json\" -e \"environments/Exercicio EBAC.postman_environment.json\" --reporters cli,htmlextra --reporter-htmlextra-export reports/report.html",
+    "test": "start-server-and-test serverest http://localhost:3000/usuarios newman"
+  },
+  "keywords": [
+    "api-testing",
+    "postman",
+    "newman",
+    "serverest",
+    "qa-automation"
+  ],
+  "author": "Gedeon Guerra",
+  "license": "ISC",
+  "devDependencies": {
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1",
+    "serverest": "^3.2.0",
+    "start-server-and-test": "^3.0.11"
+  }
+}
