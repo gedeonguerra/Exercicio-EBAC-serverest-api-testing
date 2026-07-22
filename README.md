@@ -1,6 +1,6 @@
-# Testes de API — ServeRest (Usuários)
+# Testes de API — ServeRest (Usuários, Login, Produtos e Carrinhos)
 
-Testes automatizados de API REST para o recurso **Usuários** do [ServeRest](https://serverest.dev/), API pública que simula um e-commerce, usada como referência de prática em automação de testes.
+Testes automatizados de API REST para os recursos **Usuários**, **Login**, **Produtos** e **Carrinhos** do [ServeRest](https://serverest.dev/), API pública que simula um e-commerce, usada como referência de prática em automação de testes.
 
 Projeto desenvolvido como exercício do módulo de testes de API da formação EBAC.
 
@@ -8,21 +8,25 @@ Projeto desenvolvido como exercício do módulo de testes de API da formação E
 
 ## Cobertura de testes
 
-**Positivos (5)**
-- Listar todos os usuários
-- Cadastrar usuário (com dados aleatórios)
-- Buscar usuário por ID
-- Atualizar usuário (com dados aleatórios)
-- Deletar usuário
+**Usuários**
+- Positivos: listar todos, cadastrar (dados aleatórios), buscar por ID, atualizar (dados aleatórios), deletar
+- Negativos: email duplicado, dados inválidos (campo obrigatório faltando), ID inexistente
 
-**Negativos (3)**
-- Email duplicado
-- Dados inválidos (campo obrigatório faltando)
-- ID inexistente
+**Login**
+- Positivo: autenticação com credenciais válidas
+- Negativo: autenticação com credenciais inválidas
+
+**Produtos**
+- Positivos: cadastrar (dados aleatórios), listar, buscar por ID, atualizar, deletar
+- Negativos: nome duplicado, cadastro sem token de autenticação
+
+**Carrinhos**
+- Positivos: fluxo completo de compra — cadastro de usuário comprador, login, cadastro de produto, criação de carrinho, listagem, busca por ID e conclusão de compra
+- Negativos: produto inexistente, carrinho duplicado (limite de 1 por usuário), cancelamento de compra, criação sem token
 
 **Validações aplicadas em cada request:** status code, corpo da resposta, tipos de dados, mensagens de erro e tempo de resposta (< 300ms).
 
-> Escopo: cobertura completa do CRUD do recurso `/usuarios`. Os demais recursos do ServeRest (`/produtos`, `/login`, `/carrinhos`) não fazem parte deste exercício.
+> Escopo: cobertura completa do CRUD dos recursos `/usuarios`, `/login`, `/produtos` e `/carrinhos` do ServeRest, incluindo o fluxo de ponta a ponta de compra (cadastro → login → carrinho → conclusão/cancelamento).
 
 ---
 
