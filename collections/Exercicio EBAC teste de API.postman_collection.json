@@ -1,530 +1,2249 @@
 {
-	"info": {
-		"_postman_id": "6bc5594e-4570-40bc-9d48-4bfb6db6fe50",
-		"name": "Exercicio EBAC teste de API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "44193919",
-		"_collection_link": "https://gedeon-369700.postman.co/workspace/Gedeon-'s-Workspace~e8983347-8ea7-4638-873e-ff0b098825fd/collection/44193919-6bc5594e-4570-40bc-9d48-4bfb6db6fe50?action=share&source=collection_link&creator=44193919"
-	},
-	"item": [
-		{
-			"name": "Cenários Positivos",
-			"item": [
-				{
-					"name": "Listar Todos os Usuários",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response contém array de usuários\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.usuarios).to.be.an('array');\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Quantidade de usuários é retornada\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.quantidade).to.be.a('number');\r",
-									"    pm.expect(jsonData.quantidade).to.be.at.least(0);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Cadastrar Usuário usando random",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const randomNumber = Math.floor(Math.random() * 9000)\r",
-									"const randomName = `User Number ${randomNumber}`\r",
-									"const randomEmail = `name.${randomNumber}@qa.com`\r",
-									"\r",
-									"pm.globals.set('email', randomEmail)\r",
-									"pm.globals.set('nome', randomName)"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 201\", function () {\r",
-									"    pm.response.to.have.status(201);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem de sucesso retornada\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"ID do usuário foi gerado\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData._id).to.exist;\r",
-									"    pm.expect(jsonData._id).to.be.a('string');\r",
-									"    pm.expect(jsonData._id).to.have.lengthOf.at.least(10);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Salvar userId em variável\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.environment.set(\"userId\", jsonData._id);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"nome\": \"{{nome}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"123\",\r\n    \"administrador\": \"true\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Buscar Usuário por ID",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Usuário possui nome\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.nome).to.be.a('string');\r",
-									"    pm.expect(jsonData.nome).to.have.lengthOf.at.least(1);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Usuário possui email válido\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.email).to.include('@');\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Campo administrador é booleano string\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.administrador).to.be.oneOf(['true', 'false']);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios/{{userId}}",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios",
-								"{{userId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Atualizar Usuário usando random",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"const randomNumber = Math.floor(Math.random() * 9000)\r",
-									"const randomName = `User Number ${randomNumber}`\r",
-									"const randomEmail = `name.${randomNumber}@qa.com`\r",
-									"\r",
-									"pm.globals.set('email', randomEmail)\r",
-									"pm.globals.set('nome', randomName)"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem de atualização retornada\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.include(\"Registro alterado com sucesso\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response possui estrutura correta\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.have.property('message');\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "PUT",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"nome\": \"{{nome}}Atualizado\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"teste123\",\r\n    \"administrador\": \"true\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios/{{userId}}",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios",
-								"{{userId}}"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Deletar Usuário",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem de exclusão retornada\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.include(\"excluído\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Response possui estrutura esperada\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData).to.have.property('message');\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Limpar variável userId\", function () {\r",
-									"    pm.environment.unset(\"userId\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios/{{userId}}",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios",
-								"{{userId}}"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Cenários Negativos",
-			"item": [
-				{
-					"name": "Email Duplicado",
-					"event": [
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest({\r",
-									"    url: pm.environment.get(\"ServeRest Local\") + \"/usuarios\",\r",
-									"    method: 'POST',\r",
-									"    header: {\r",
-									"        'Content-Type': 'application/json'\r",
-									"    },\r",
-									"    body: {\r",
-									"        mode: 'raw',\r",
-									"        raw: JSON.stringify({\r",
-									"            nome: \"Usuario Fixo\",\r",
-									"            email: \"emailfixo@qa.com\",\r",
-									"            password: \"teste123\",\r",
-									"            administrador: \"true\"\r",
-									"        })\r",
-									"    }\r",
-									"}, function (err, res) {\r",
-									"    console.log(\"Setup concluído\");\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						},
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem indica email já cadastrado\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.include(\"já está sendo usado\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Não retorna _id\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData._id).to.not.exist;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"nome\": \"Usuario Fixo\",\r\n  \"email\": \"emailfixo@qa.com\",\r\n  \"password\": \"teste123\",\r\n  \"administrador\": \"false\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Dados Inválidos (Campo Obrigatório Faltando)",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem indica campo obrigatório\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.email).to.exist;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Não retorna _id\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData._id).to.not.exist;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n  \"nome\": \"Sem Email\",\r\n  \"password\": \"teste123\",\r\n  \"administrador\": \"true\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Buscar ID Inexistente",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"pm.test(\"Status code é 400\", function () {\r",
-									"    pm.response.to.have.status(400);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem indica usuário não encontrado\", function () {\r",
-									"    var jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.message).to.include(\"Usuário não encontrado\");\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
-									"    pm.expect(pm.response.responseTime).to.be.below(300);\r",
-									"});"
-								],
-								"type": "text/javascript",
-								"packages": {},
-								"requests": {}
-							}
-						}
-					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{ServeRest Local}}/usuarios/idInexistente123",
-							"host": [
-								"{{ServeRest Local}}"
-							],
-							"path": [
-								"usuarios",
-								"idInexistente123"
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		}
-	]
+  "info": {
+    "_postman_id": "6bc5594e-4570-40bc-9d48-4bfb6db6fe50",
+    "name": "ServeRest API Testing - Cobertura Completa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "44193919",
+    "_collection_link": "https://gedeon-369700.postman.co/workspace/Gedeon-'s-Workspace~e8983347-8ea7-4638-873e-ff0b098825fd/collection/44193919-6bc5594e-4570-40bc-9d48-4bfb6db6fe50?action=share&source=collection_link&creator=44193919"
+  },
+  "item": [
+    {
+      "name": "Usuários",
+      "item": [
+        {
+          "name": "Cenários Positivos",
+          "item": [
+            {
+              "name": "Listar Todos os Usuários",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response contém array de usuários\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.usuarios).to.be.an('array');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Quantidade de usuários é retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.quantidade).to.be.a('number');\r",
+                      "    pm.expect(jsonData.quantidade).to.be.at.least(0);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Usuário usando random",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 9000)\r",
+                      "const randomName = `User Number ${randomNumber}`\r",
+                      "const randomEmail = `name.${randomNumber}@qa.com`\r",
+                      "\r",
+                      "pm.globals.set('email', randomEmail)\r",
+                      "pm.globals.set('nome', randomName)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de sucesso retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"ID do usuário foi gerado\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData._id).to.exist;\r",
+                      "    pm.expect(jsonData._id).to.be.a('string');\r",
+                      "    pm.expect(jsonData._id).to.have.lengthOf.at.least(10);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar userId em variável\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"userId\", jsonData._id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{nome}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"123\",\r\n    \"administrador\": \"true\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Usuário por ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Usuário possui nome\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.nome).to.be.a('string');\r",
+                      "    pm.expect(jsonData.nome).to.have.lengthOf.at.least(1);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Usuário possui email válido\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.email).to.include('@');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Campo administrador é booleano string\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.administrador).to.be.oneOf(['true', 'false']);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios/{{userId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios",
+                    "{{userId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Atualizar Usuário usando random",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 9000)\r",
+                      "const randomName = `User Number ${randomNumber}`\r",
+                      "const randomEmail = `name.${randomNumber}@qa.com`\r",
+                      "\r",
+                      "pm.globals.set('email', randomEmail)\r",
+                      "pm.globals.set('nome', randomName)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de atualização retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Registro alterado com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response possui estrutura correta\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property('message');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{nome}}Atualizado\",\r\n    \"email\": \"{{email}}\",\r\n    \"password\": \"teste123\",\r\n    \"administrador\": \"true\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios/{{userId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios",
+                    "{{userId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deletar Usuário",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de exclusão retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"excluído\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response possui estrutura esperada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData).to.have.property('message');\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Limpar variável userId\", function () {\r",
+                      "    pm.environment.unset(\"userId\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios/{{userId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios",
+                    "{{userId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cenários Negativos",
+          "item": [
+            {
+              "name": "Email Duplicado",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest({\r",
+                      "    url: pm.environment.get(\"ServeRest Local\") + \"/usuarios\",\r",
+                      "    method: 'POST',\r",
+                      "    header: {\r",
+                      "        'Content-Type': 'application/json'\r",
+                      "    },\r",
+                      "    body: {\r",
+                      "        mode: 'raw',\r",
+                      "        raw: JSON.stringify({\r",
+                      "            nome: \"Usuario Fixo\",\r",
+                      "            email: \"emailfixo@qa.com\",\r",
+                      "            password: \"teste123\",\r",
+                      "            administrador: \"true\"\r",
+                      "        })\r",
+                      "    }\r",
+                      "}, function (err, res) {\r",
+                      "    console.log(\"Setup concluído\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica email já cadastrado\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"já está sendo usado\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Não retorna _id\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData._id).to.not.exist;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nome\": \"Usuario Fixo\",\r\n  \"email\": \"emailfixo@qa.com\",\r\n  \"password\": \"teste123\",\r\n  \"administrador\": \"false\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Dados Inválidos (Campo Obrigatório Faltando)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica campo obrigatório\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.email).to.exist;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Não retorna _id\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData._id).to.not.exist;\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n  \"nome\": \"Sem Email\",\r\n  \"password\": \"teste123\",\r\n  \"administrador\": \"true\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar ID Inexistente",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica usuário não encontrado\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Usuário não encontrado\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios/idInexistente123",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios",
+                    "idInexistente123"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "item": [
+        {
+          "name": "Cenários Positivos",
+          "item": [
+            {
+              "name": "Login com Credenciais Válidas",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Token de autorização é retornado\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.authorization).to.exist;\r",
+                      "    pm.expect(jsonData.authorization).to.include(\"Bearer\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar token de admin em variável\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"adminToken\", jsonData.authorization);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"fulano@qa.com\",\r\n    \"password\": \"teste\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/login",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cenários Negativos",
+          "item": [
+            {
+              "name": "Login com Credenciais Inválidas",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica email e/ou senha inválidos\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Email e/ou senha inválidos\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"naoexiste@qa.com\",\r\n    \"password\": \"senhaErrada\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/login",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Produtos",
+      "item": [
+        {
+          "name": "Cenários Positivos",
+          "item": [
+            {
+              "name": "Cadastrar Produto usando random",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"produtoNome\", `Produto QA ${randomNumber}`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de sucesso retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"ID do produto foi gerado e salvo\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData._id).to.exist;\r",
+                      "    pm.environment.set(\"produtoId\", jsonData._id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{produtoNome}}\",\r\n    \"preco\": 470,\r\n    \"descricao\": \"Produto criado via automação de testes\",\r\n    \"quantidade\": 50\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Produtos",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response contém array de produtos\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.produtos).to.be.an(\"array\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Produto por ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Produto possui nome e preço\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.nome).to.exist;\r",
+                      "    pm.expect(jsonData.preco).to.be.a(\"number\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Atualizar Produto",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de atualização retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Registro alterado com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{produtoNome}} Atualizado\",\r\n    \"preco\": 500,\r\n    \"descricao\": \"Produto atualizado via automação de testes\",\r\n    \"quantidade\": 40\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Deletar Produto",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de exclusão retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Registro excluído com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Limpar variável produtoId\", function () {\r",
+                      "    pm.environment.unset(\"produtoId\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos/{{produtoId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoId}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cenários Negativos",
+          "item": [
+            {
+              "name": "Cadastrar Produto Base para Duplicidade",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do produto base\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"produtoBaseId\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Produto Base Duplicidade QA\",\r\n    \"preco\": 100,\r\n    \"descricao\": \"Usado para validar regra de nome duplicado\",\r\n    \"quantidade\": 10\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Produto com Nome Duplicado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica nome já existente\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Já existe produto com esse nome\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Produto Base Duplicidade QA\",\r\n    \"preco\": 999,\r\n    \"descricao\": \"Tentativa de nome duplicado\",\r\n    \"quantidade\": 5\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Limpar Produto Base para Duplicidade",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos/{{produtoBaseId}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos",
+                    "{{produtoBaseId}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Produto sem Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica token ausente ou inválido\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Token de acesso ausente\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Produto Sem Token QA\",\r\n    \"preco\": 50,\r\n    \"descricao\": \"Não deve ser criado\",\r\n    \"quantidade\": 1\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Carrinhos",
+      "item": [
+        {
+          "name": "Cenários Positivos",
+          "item": [
+            {
+              "name": "Cadastrar Usuário Comprador A",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorAEmail\", `comprador.a.${randomNumber}@qa.com`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Comprador QA A\",\r\n    \"email\": \"{{compradorAEmail}}\",\r\n    \"password\": \"teste123\",\r\n    \"administrador\": \"false\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Usuário Comprador A",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar token do comprador A\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorAToken\", jsonData.authorization);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"{{compradorAEmail}}\",\r\n    \"password\": \"teste123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/login",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Produto para Carrinho A",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorAProdutoNome\", `Produto Carrinho A ${randomNumber}`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do produto A\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorAProdutoId\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{compradorAProdutoNome}}\",\r\n    \"preco\": 80,\r\n    \"descricao\": \"Produto para teste de carrinho\",\r\n    \"quantidade\": 20\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Carrinho A",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do carrinho A\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"carrinhoIdA\", jsonData._id);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorAToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{compradorAProdutoId}}\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Listar Carrinhos",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response contém array de carrinhos\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.carrinhos).to.be.an(\"array\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Buscar Carrinho por ID",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Carrinho possui produtos e preço total\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.produtos).to.be.an(\"array\");\r",
+                      "    pm.expect(jsonData.precoTotal).to.be.a(\"number\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos/{{carrinhoIdA}}",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos",
+                    "{{carrinhoIdA}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Concluir Compra",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem de exclusão de carrinho retornada\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Registro excluído com sucesso\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Limpar variáveis do fluxo A\", function () {\r",
+                      "    pm.environment.unset(\"carrinhoIdA\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorAToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos/concluir-compra",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos",
+                    "concluir-compra"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Usuário Comprador B",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorBEmail\", `comprador.b.${randomNumber}@qa.com`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Comprador QA B\",\r\n    \"email\": \"{{compradorBEmail}}\",\r\n    \"password\": \"teste123\",\r\n    \"administrador\": \"false\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Usuário Comprador B",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar token do comprador B\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorBToken\", jsonData.authorization);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"{{compradorBEmail}}\",\r\n    \"password\": \"teste123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/login",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Produto para Carrinho B",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorBProdutoNome\", `Produto Carrinho B ${randomNumber}`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do produto B\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorBProdutoId\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{compradorBProdutoNome}}\",\r\n    \"preco\": 80,\r\n    \"descricao\": \"Produto para teste de carrinho\",\r\n    \"quantidade\": 20\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Carrinho B",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do carrinho B\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"carrinhoIdB\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorBToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{compradorBProdutoId}}\",\r\n            \"quantidade\": 2\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cancelar Compra",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica estoque reabastecido\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Registro excluído com sucesso. Estoque dos produtos reabastecido\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Limpar variáveis do fluxo B\", function () {\r",
+                      "    pm.environment.unset(\"carrinhoIdB\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorBToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos/cancelar-compra",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos",
+                    "cancelar-compra"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cenários Negativos",
+          "item": [
+            {
+              "name": "Cadastrar Usuário Comprador C",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorCEmail\", `comprador.c.${randomNumber}@qa.com`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"Comprador QA C\",\r\n    \"email\": \"{{compradorCEmail}}\",\r\n    \"password\": \"teste123\",\r\n    \"administrador\": \"false\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/usuarios",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "usuarios"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login Usuário Comprador C",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar token do comprador C\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorCToken\", jsonData.authorization);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"{{compradorCEmail}}\",\r\n    \"password\": \"teste123\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/login",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Produto para Carrinho C",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "const randomNumber = Math.floor(Math.random() * 90000)\r",
+                      "pm.globals.set(\"compradorCProdutoNome\", `Produto Carrinho C ${randomNumber}`)"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do produto C\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"compradorCProdutoId\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{adminToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"nome\": \"{{compradorCProdutoNome}}\",\r\n    \"preco\": 80,\r\n    \"descricao\": \"Produto para teste de carrinho\",\r\n    \"quantidade\": 20\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/produtos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "produtos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Carrinho com Produto Inexistente",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica produto não encontrado\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Produto não encontrado\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorCToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"idProdutoQueNaoExiste123\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Primeiro Carrinho (Comprador C)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Salvar ID do carrinho C\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.environment.set(\"carrinhoIdC\", jsonData._id);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorCToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{compradorCProdutoId}}\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Carrinho Duplicado",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 400\", function () {\r",
+                      "    pm.response.to.have.status(400);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica limite de 1 carrinho por usuário\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.eql(\"Não é permitido ter mais de 1 carrinho\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Tempo de resposta menor que 300ms\", function () {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(300);\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorCToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{compradorCProdutoId}}\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Cadastrar Carrinho sem Token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 401\", function () {\r",
+                      "    pm.response.to.have.status(401);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Mensagem indica token ausente ou inválido\", function () {\r",
+                      "    var jsonData = pm.response.json();\r",
+                      "    pm.expect(jsonData.message).to.include(\"Token de acesso ausente\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"produtos\": [\r\n        {\r\n            \"idProduto\": \"{{compradorCProdutoId}}\",\r\n            \"quantidade\": 1\r\n        }\r\n    ]\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Concluir Compra do Comprador C (limpeza)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code é 200\", function () {\r",
+                      "    pm.response.to.have.status(200);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Limpar variáveis do fluxo C\", function () {\r",
+                      "    pm.environment.unset(\"carrinhoIdC\");\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "{{compradorCToken}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{ServeRest Local}}/carrinhos/concluir-compra",
+                  "host": [
+                    "{{ServeRest Local}}"
+                  ],
+                  "path": [
+                    "carrinhos",
+                    "concluir-compra"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
